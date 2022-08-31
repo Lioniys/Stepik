@@ -16,8 +16,8 @@ class LinkedList:
         if self.head == None:
             self.head = obj
         else:
-            obj.set_prev(self.tail)
-            self.tail.set_next(obj)
+            obj.prev = self.tail
+            self.tail.next = obj
         self.tail = obj
 
     def remove_obj_last(self):
@@ -25,11 +25,11 @@ class LinkedList:
         удаление последнего объекта 
         из связного списка
         """
-        if self.tail.get_prev() == None:
+        if self.tail.prev == None:
             self.head = None
             self.tail = None
         else:
-            self.tail = self.tail.get_prev()
+            self.tail = self.tail.prev
 
     def remove_obj(self, indx):
         """
@@ -44,14 +44,14 @@ class LinkedList:
             self.tail = None
         else:
             while i != indx:
-                c = c.get_next()
+                c = c.next
                 i += 1
-            if c.get_next() != None:
-                c.get_next().set_prev(c.get_prev())
-                c.get_prev().set_next(c.get_next())
+            if c.next != None:
+                c.next.prev = c.prev
+                c.prev.next = c.next
             else:
-                c.get_prev().set_next(None)
-                self.tail = c.get_prev()
+                c.prev.next = None
+                self.tail = c.prev
 
     def get_data(self):
         """
@@ -60,13 +60,13 @@ class LinkedList:
         всех объектов связного списка.
         """
         x = self.head
-        l = []
+        lst = []
         if self.head != None:
-            while x.get_next() != None:
-                l.append(x.get_data())
-                x = x.get_next()
-            l.append(x.get_data())
-        return l
+            while x.next != None:
+                lst.append(x.data)
+                x = x.next
+            lst.append(x.data)
+        return lst
 
     def __len__(self):
         """
@@ -84,48 +84,43 @@ class LinkedList:
         return self.get_data()[indx]
 
 
+class Descriptor:
+    def __set_name__(self, owner, name):
+        """
+        Метод автоматически вызывается когда создается экземпляр класса
+        self - ссылка на экземпляр класса, owner - ссылка на класс ObjList
+        """
+        self.name = '_' + name
+
+    def __get__(self, instance, owner):
+        """
+        self - ссылка на экземпляр класса
+        instance - ссылка на экзампляр класса из которого был вызван
+        owner - ссылка на класс ObjList
+        """
+        return instance.__dict__[self.name]
+
+    def __set__(self, instance, value):
+        """
+        Срабатывает в момент присваивания из инициализатора
+        self - ссылка на экземпляр класса
+        instance - ссылка на экзампляр класса из которого был вызван
+        value - значение которое будет присвоено
+        """
+        instance.__dict__[self.name] = value
+
+
 class ObjList:
+    next = Descriptor()
+    prev = Descriptor()
+    data = Descriptor()
 
     def __init__(self, data) -> None:
         """
-        __next - ссылка на следующий объект связного списка;
-        __prev - ссылка на предыдущий объект связного списка;
-        __data - строка с данными.
+        next - ссылка на следующий объект связного списка;
+        prev - ссылка на предыдущий объект связного списка;
+        data - строка с данными.
         """
-        self.__next = None
-        self.__prev = None
-        self.__data = data
-        pass
-
-    def set_next(self, obj):
-        """изменение приватного свойства __next на значение obj;
-        """
-        self.__next = obj
-        pass
-
-    def set_prev(self, obj):
-        """изменение приватного свойства __prev на значение obj;
-        """
-        self.__prev = obj
-        pass
-
-    def get_next(self):
-        """получение значения приватного свойства __next;
-        """
-        return self.__next
-
-    def get_prev(self):
-        """получение значения приватного свойства __prev;
-        """
-        return self.__prev
-
-    def set_data(self, data):
-        """изменение приватного свойства __data на значение data;
-        """
-        self.__data = data
-        pass
-
-    def get_data(self):
-        """получение значения приватного свойства __data.
-        """
-        return self.__data
+        self.next = None
+        self.prev = None
+        self.data = data
