@@ -18,6 +18,9 @@ class GamePole:
             cls.__singleton = super().__new__(cls)
         return cls.__singleton
 
+    def __del__(self):
+        GamePole.__singleton = None
+
     def __init__(self, N, M, total_mines):
         """
         N x M - размер поля;
