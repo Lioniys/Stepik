@@ -10,7 +10,7 @@ class Stack:
         объекта класса StackObj
         в конец односвязного списка
         """
-        self.push(other)
+        self.push_back(other)
         return self
 
     def __mul__(self, other: list):
@@ -19,7 +19,7 @@ class Stack:
         в конец односвязного списка
         """
         for i in [StackObj(x) for x in other]:
-            self.push(i)
+            self.push_back(i)
         return self
 
     def __len__(self):
@@ -28,22 +28,17 @@ class Stack:
     def __getitem__(self, item):
         if type(item) != int or item < 0 or item > len(self):
             raise IndexError('неверный индекс')
-        return self.get_obj()[item]
+        return self.get_obj()[item].data
 
     def __setitem__(self, key, value):
         if type(key) != int or key < 0 or key > len(self):
             raise IndexError('неверный индекс')
-        if self.get_obj()[key].next is not None:
-            value.next = self.get_obj()[key + 1]
-        else:
-            self.last = value
-        if key != 0:
-            self.get_obj()[key - 1].next = value
-        if key == 0:
-            self.top = value
+        self.get_obj()[key].data = value
 
+    def __iter__(self):
+        return iter(self.get_obj())
 
-    def push(self, obj):
+    def push_back(self, obj):
         """
         Добавляет элемент
         в конец стека
@@ -53,6 +48,10 @@ class Stack:
         else:
             self.last.next = obj
         self.last = obj
+
+    def push_front(self, obj):
+        obj.next = self.top
+        self.top = obj
 
     def pop_last(self):
         """
@@ -107,8 +106,7 @@ class StackObj:
 
     @data.setter
     def data(self, data):
-        if isinstance(data, StackObj) or next is None:
-            self.__data = data
+        self.__data = data
 
     @property
     def next(self):
